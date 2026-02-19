@@ -1,0 +1,64 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}Login — AI-QA Blog{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4 py-16">
+    <div class="bg-cream max-w-md w-full p-8 rounded-2xl"
+         style="border: 1px solid rgba(13,59,56,0.12); box-shadow: var(--shadow-lg);">
+
+        <div class="text-center mb-8">
+            <a href="{% url 'blog:post_list' %}"
+               class="inline-flex items-center gap-2.5 mb-6 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 rounded-xl p-1">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+                     style="background: #0D3B38; box-shadow: var(--shadow-md); transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);">
+                    <span class="font-bold text-lg" style="color: #C8601A;">AQ</span>
+                </div>
+            </a>
+            <h1 class="font-display text-2xl font-bold text-ink" style="letter-spacing: -0.02em;">Welcome Back</h1>
+            <p class="text-ink-faint text-sm mt-1">Sign in to your AI-QA Blog account</p>
+        </div>
+
+        {% if form.errors %}
+        <div class="text-sm rounded-xl p-4 mb-6 flex items-center gap-2"
+             style="background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B;">
+            <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            Invalid username or password. Please try again.
+        </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-5">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-bold text-ink mb-2">Username</label>
+                <input type="text" name="username" autofocus required
+                       class="w-full px-4 py-3 text-sm text-ink bg-parchment rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+                       style="border: 1px solid rgba(13,59,56,0.20); transition: border-color 0.15s;"
+                       placeholder="Enter your username" />
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-ink mb-2">Password</label>
+                <input type="password" name="password" required
+                       class="w-full px-4 py-3 text-sm text-ink bg-parchment rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+                       style="border: 1px solid rgba(13,59,56,0.20); transition: border-color 0.15s;"
+                       placeholder="Enter your password" />
+            </div>
+            <input type="hidden" name="next" value="{{ next }}" />
+            <button type="submit"
+                    class="w-full py-3 text-cream font-bold rounded-xl text-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2"
+                    style="background: #C8601A; box-shadow: var(--shadow-accent); transition: background-color 0.15s, transform 0.15s;"
+                    onmouseover="this.style.background='#9E4A13'" onmouseout="this.style.background='#C8601A'">
+                Sign In
+            </button>
+        </form>
+
+        <p class="text-center text-xs text-ink-faint mt-6">
+            <a href="{% url 'blog:post_list' %}"
+               class="hover:text-brand active:opacity-70 focus-visible:outline-none focus-visible:underline"
+               style="transition: color 0.15s;">← Back to Blog</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

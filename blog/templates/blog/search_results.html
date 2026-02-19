@@ -1,0 +1,142 @@
+{% extends 'blog/base.html' %}
+{% load blog_tags %}
+
+{% block title %}{% if query %}Search: "{{ query }}"{% else %}Search{% endif %} — AI-QA Blog{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="font-display font-bold text-ink" style="font-size: clamp(1.8rem, 4vw, 2.5rem); letter-spacing: -0.02em;">
+            {% if query %}
+                Search: <span class="text-accent">"{{ query }}"</span>
+            {% else %}
+                Search Posts
+            {% endif %}
+        </h1>
+        {% if query %}
+        <p class="text-ink-muted mt-1 text-sm">
+            Found <span class="font-bold text-ink">{{ result_count }}</span>
+            result{{ result_count|pluralize }}
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- Search Bar -->
+    <form method="GET" action="{% url 'blog:search' %}" class="flex gap-2 max-w-2xl mb-10">
+        <div class="relative flex-1">
+            <input type="text" name="query" value="{{ query }}" placeholder="Search articles…"
+                   autofocus
+                   class="w-full pl-11 pr-4 py-3.5 text-sm text-ink bg-cream rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                   style="border: 1px solid rgba(13,59,56,0.18); box-shadow: var(--shadow-sm);" />
+            <div class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-ink-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+        </div>
+        <button type="submit"
+                class="px-6 py-3.5 text-cream font-bold rounded-xl text-sm whitespace-nowrap active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
+                style="background: #C8601A; box-shadow: var(--shadow-accent); transition: background-color 0.15s, transform 0.15s;"
+                onmouseover="this.style.background='#9E4A13'" onmouseout="this.style.background='#C8601A'">
+            Search
+        </button>
+    </form>
+
+    <!-- Results -->
+    {% if results %}
+    <div class="space-y-4">
+        {% for post in results %}
+        <article class="bg-cream rounded-2xl p-5 flex gap-5 group hover:shadow-brand-md active:opacity-95 focus-within:ring-2 focus-within:ring-brand/30"
+                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm); transition: box-shadow 0.25s ease;">
+            <a href="{{ post.get_absolute_url }}"
+               class="flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 rounded-xl overflow-hidden relative"
+               style="width: 112px; height: 80px;">
+                {% if post.featured_image %}
+                <img src="{{ post.featured_image.url }}" alt="{{ post.title }}"
+                     class="w-full h-full object-cover" style="transition: opacity 0.2s ease;" />
+                <div class="absolute inset-0 pointer-events-none"
+                     style="background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 60%);"></div>
+                <div class="absolute inset-0 pointer-events-none mix-blend-multiply"
+                     style="background: rgba(13,59,56,0.18);"></div>
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center"
+                     style="background: linear-gradient(135deg, #0D3B38, #1A5C57);">
+                    <span class="font-display font-bold select-none"
+                          style="font-size: 1.8rem; color: rgba(255,255,255,0.18);">{{ post.title|first|upper }}</span>
+                </div>
+                {% endif %}
+            </a>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-4 flex-wrap mb-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        {% if post.category %}
+                        <span class="text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full"
+                              style="color: #9E4A13; background: #F5E2D0;">{{ post.category.name }}</span>
+                        {% endif %}
+                        <h3 class="font-display text-base font-bold text-ink group-hover:text-brand"
+                            style="letter-spacing: -0.01em; transition: color 0.15s;">
+                            <a href="{{ post.get_absolute_url }}"
+                               class="focus-visible:outline-none focus-visible:underline">{{ post.title }}</a>
+                        </h3>
+                    </div>
+                    <span class="text-xs text-ink-faint flex-shrink-0">{{ post.created_at|date:"M j, Y" }}</span>
+                </div>
+                <p class="text-sm text-ink-muted leading-relaxed mb-3">
+                    {{ post.excerpt|default:post.body|strip_tags|truncatechars:200 }}
+                </p>
+                <div class="flex items-center flex-wrap gap-3">
+                    <span class="text-xs text-ink-faint">
+                        By <span class="font-medium text-ink-muted">{{ post.author.get_full_name|default:post.author.username }}</span>
+                    </span>
+                    <span class="text-ink-faint">·</span>
+                    <span class="text-xs text-ink-faint">{{ post.reading_time }} min read</span>
+                    {% for tag in post.tags.all|slice:":4" %}
+                    <a href="{{ tag.get_absolute_url }}"
+                       class="tag-pill text-xs font-medium px-2 py-0.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                       style="color: #0D3B38; background: #EAF3F2; border: 1px solid #C8DEDC;">
+                        #{{ tag.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    {% elif query %}
+    <div class="text-center py-24 bg-cream rounded-2xl"
+         style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+        <div class="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center"
+             style="background: #EAF3F2;">
+            <svg class="w-8 h-8 text-brand-mid" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+        </div>
+        <h3 class="font-display text-xl font-bold text-ink mb-2">No results found</h3>
+        <p class="text-ink-muted mb-6 text-sm">Try different keywords or browse by category.</p>
+        <a href="{% url 'blog:post_list' %}"
+           class="inline-block px-6 py-3 text-cream font-semibold rounded-full active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 text-sm"
+           style="background: #C8601A; box-shadow: var(--shadow-accent); transition: background-color 0.15s, transform 0.15s;"
+           onmouseover="this.style.background='#9E4A13'" onmouseout="this.style.background='#C8601A'">
+            Browse All Posts
+        </a>
+    </div>
+
+    {% else %}
+    <div class="text-center py-24 bg-cream rounded-2xl"
+         style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+        <div class="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center"
+             style="background: #EAF3F2;">
+            <svg class="w-8 h-8 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+        </div>
+        <h3 class="font-display text-xl font-bold text-ink mb-2">What are you looking for?</h3>
+        <p class="text-ink-muted text-sm">Type a keyword above to search through all posts.</p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

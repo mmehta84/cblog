@@ -1,0 +1,164 @@
+{% extends 'blog/base.html' %}
+{% load blog_tags %}
+
+{% block title %}{{ category.name }} — AI-QA Blog{% endblock %}
+
+{% block content %}
+
+<!-- Banner -->
+<section class="relative text-white py-16 px-4 text-center overflow-hidden"
+         style="background-color: #082A27;
+                background-image:
+                    radial-gradient(ellipse 65% 55% at 15% 85%, rgba(200,96,26,0.35) 0%, transparent 58%),
+                    radial-gradient(ellipse 60% 50% at 88% 15%, rgba(46,157,150,0.38) 0%, transparent 55%);">
+    <svg class="absolute inset-0 w-full h-full pointer-events-none mix-blend-overlay"
+         preserveAspectRatio="xMidYMid slice" style="opacity: 0.15;">
+        <filter id="cat-grain"><feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+        <rect width="100%" height="100%" filter="url(#cat-grain)"/>
+    </svg>
+    <div class="relative max-w-3xl mx-auto">
+        <span class="inline-block px-3 py-1 text-xs font-bold uppercase tracking-widest rounded-full mb-4"
+              style="background: rgba(200,96,26,0.20); border: 1px solid rgba(200,96,26,0.35); color: #F5C896;">Category</span>
+        <h1 class="font-display font-bold text-white mb-3"
+            style="font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -0.02em;">{{ category.name }}</h1>
+        {% if category.description %}
+        <p class="text-base max-w-lg mx-auto" style="color: rgba(255,255,255,0.68);">{{ category.description }}</p>
+        {% endif %}
+        <p class="mt-2 text-sm" style="color: rgba(255,255,255,0.50);">{{ page_obj.paginator.count }} post{{ page_obj.paginator.count|pluralize }}</p>
+    </div>
+</section>
+
+<div class="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+
+        <!-- Posts -->
+        <div class="flex-1 min-w-0">
+            {% if posts %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for post in posts %}
+                <article class="post-card bg-cream rounded-2xl overflow-hidden group"
+                         style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                    <a href="{{ post.get_absolute_url }}" class="block relative overflow-hidden"
+                       style="aspect-ratio: 16/9;">
+                        {% if post.featured_image %}
+                        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}"
+                             class="w-full h-full object-cover" style="transition: transform 0.5s ease;" />
+                        <div class="absolute inset-0 pointer-events-none"
+                             style="background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);"></div>
+                        <div class="absolute inset-0 pointer-events-none mix-blend-multiply"
+                             style="background: rgba(13,59,56,0.20);"></div>
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center"
+                             style="background: linear-gradient(135deg,
+                                {% cycle '#0D3B38, #1A5C57' '#C8601A, #9E4A13' '#1A5C57, #2E9D96' '#082A27, #0D3B38' %});">
+                            <span class="font-display font-bold select-none"
+                                  style="font-size: 4rem; color: rgba(255,255,255,0.15);">{{ post.title|first|upper }}</span>
+                        </div>
+                        {% endif %}
+                    </a>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full"
+                                  style="color: #9E4A13; background: #F5E2D0;">{{ category.name }}</span>
+                            <span class="text-xs text-ink-faint">{{ post.reading_time }} min read</span>
+                        </div>
+                        <h3 class="font-display text-lg font-bold text-ink mb-2 line-clamp-2 leading-snug group-hover:text-brand"
+                            style="letter-spacing: -0.01em; transition: color 0.15s;">
+                            <a href="{{ post.get_absolute_url }}"
+                               class="focus-visible:outline-none focus-visible:underline">{{ post.title }}</a>
+                        </h3>
+                        <p class="text-sm text-ink-muted mb-4 line-clamp-2">{{ post.excerpt|default:post.body|strip_tags|truncatechars:120 }}</p>
+                        {% if post.tags.exists %}
+                        <div class="flex flex-wrap gap-1 mb-4">
+                            {% for tag in post.tags.all|slice:":3" %}
+                            <a href="{{ tag.get_absolute_url }}"
+                               class="tag-pill text-xs font-medium px-2 py-0.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                               style="color: #0D3B38; background: #EAF3F2; border: 1px solid #C8DEDC;">#{{ tag.name }}</a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="flex items-center justify-between pt-4 text-xs text-ink-faint"
+                             style="border-top: 1px solid rgba(13,59,56,0.08);">
+                            <span class="font-medium text-ink-muted">{{ post.author.get_full_name|default:post.author.username }}</span>
+                            <span>{{ post.created_at|date:"M j, Y" }}</span>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            {% if is_paginated %}
+            <div class="flex justify-center items-center gap-2 mt-10">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"
+                   class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                   style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">&larr; Prev</a>
+                {% endif %}
+                <span class="px-4 py-2 rounded-full text-cream text-sm font-bold"
+                      style="background: #0D3B38; box-shadow: var(--shadow-sm);">{{ page_obj.number }}</span>
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"
+                   class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                   style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">Next &rarr;</a>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-24 bg-cream rounded-2xl"
+                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <p class="text-ink-muted">No published posts in this category yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="lg:w-72 space-y-4 flex-shrink-0">
+            <div class="bg-cream rounded-2xl overflow-hidden"
+                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <div class="px-5 py-4" style="border-bottom: 1px solid rgba(13,59,56,0.08);">
+                    <h3 class="font-semibold text-ink text-sm">All Categories</h3>
+                </div>
+                <ul class="p-3 space-y-0.5">
+                    {% for cat in categories %}
+                    <li>
+                        <a href="{{ cat.get_absolute_url }}"
+                           class="flex items-center justify-between px-3 py-2 rounded-xl group active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40
+                                  {% if cat.slug == category.slug %}bg-brand-faint{% else %}hover:bg-brand-faint{% endif %}"
+                           style="transition: background-color 0.15s;">
+                            <span class="text-sm font-medium
+                                {% if cat.slug == category.slug %}text-brand font-bold{% else %}text-ink-muted group-hover:text-brand{% endif %}"
+                                  style="transition: color 0.15s;">{{ cat.name }}</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full font-semibold"
+                                  style="{% if cat.slug == category.slug %}background: #0D3B38; color: #FFFCF5;{% else %}background: rgba(13,59,56,0.07); color: #6B6458;{% endif %}">
+                                {{ cat.post_count }}
+                            </span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="bg-cream rounded-2xl p-5"
+                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <h3 class="font-semibold text-ink text-sm mb-3">
+                    <span class="text-accent font-bold">#</span> Tags
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for tag in tags %}
+                    <a href="{{ tag.get_absolute_url }}"
+                       class="tag-pill text-xs font-semibold px-2.5 py-1 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                       style="color: #0D3B38; background: #EAF3F2; border: 1px solid #C8DEDC;"
+                       onmouseover="this.style.background='#0D3B38';this.style.color='#FFFCF5';this.style.borderColor='#0D3B38';"
+                       onmouseout="this.style.background='#EAF3F2';this.style.color='#0D3B38';this.style.borderColor='#C8DEDC';">
+                        #{{ tag.name }}
+                    </a>
+                    {% empty %}
+                    <p class="text-sm text-ink-faint">No tags.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</div>
+{% endblock %}

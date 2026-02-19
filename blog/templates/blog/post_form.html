@@ -1,0 +1,153 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ form_title }} — AI-QA Blog{% endblock %}
+
+{% block extra_head %}
+{{ form.media }}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-10 sm:px-6">
+
+    <!-- Header -->
+    <div class="mb-8 flex items-center gap-4">
+        <a href="{% url 'blog:post_list' %}"
+           class="w-9 h-9 rounded-xl flex items-center justify-center text-ink-muted hover:text-brand hover:bg-brand-faint active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+           style="border: 1px solid rgba(13,59,56,0.16); transition: color 0.15s, background-color 0.15s, transform 0.15s;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <div>
+            <h1 class="font-display text-2xl font-bold text-ink" style="letter-spacing: -0.02em;">{{ form_title }}</h1>
+            <p class="text-sm text-ink-faint mt-0.5">Fill in the details below</p>
+        </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- LEFT: Main Content -->
+            <div class="lg:col-span-2 space-y-5">
+
+                <!-- Title -->
+                <div class="bg-cream rounded-2xl p-6"
+                     style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                    <label class="block text-sm font-bold text-ink mb-2"
+                           for="{{ form.title.id_for_label }}">
+                        Title <span class="text-accent">*</span>
+                    </label>
+                    {{ form.title }}
+                    {% for error in form.title.errors %}
+                    <p class="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+
+                <!-- Body (CKEditor) -->
+                <div class="bg-cream rounded-2xl p-6"
+                     style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                    <label class="block text-sm font-bold text-ink mb-3">
+                        Content <span class="text-accent">*</span>
+                    </label>
+                    {{ form.body }}
+                    {% for error in form.body.errors %}
+                    <p class="mt-1.5 text-xs text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Excerpt -->
+                <div class="bg-cream rounded-2xl p-6"
+                     style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                    <label class="block text-sm font-bold text-ink mb-2"
+                           for="{{ form.excerpt.id_for_label }}">
+                        Excerpt
+                        <span class="text-ink-faint font-normal ml-1">— optional</span>
+                    </label>
+                    {{ form.excerpt }}
+                    <p class="text-xs text-ink-faint mt-1.5">Auto-generated from body if left blank.</p>
+                </div>
+            </div>
+
+            <!-- RIGHT: Options Sidebar -->
+            <div class="space-y-5">
+
+                <!-- Publish Box -->
+                <div class="bg-cream rounded-2xl p-5"
+                     style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                    <h3 class="text-xs font-bold text-ink-faint uppercase tracking-wider mb-4">Publish</h3>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-ink-muted mb-2">Status</label>
+                        {{ form.status }}
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit"
+                                class="flex-1 py-2.5 text-cream text-sm font-bold rounded-xl active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2"
+                                style="background: #C8601A; box-shadow: var(--shadow-accent); transition: background-color 0.15s, transform 0.15s;"
+                                onmouseover="this.style.background='#9E4A13'" onmouseout="this.style.background='#C8601A'">
+                            {{ submit_label }}
+                        </button>
+                        <a href="{% url 'blog:post_list' %}"
+                           class="px-4 py-2.5 text-ink-muted text-sm font-medium rounded-xl hover:bg-brand-faint hover:text-brand active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                           style="border: 1px solid rgba(13,59,56,0.14); transition: background-color 0.15s, color 0.15s, transform 0.15s;">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div class="bg-cream rounded-2xl p-5"
+                     style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                    <h3 class="text-xs font-bold text-ink-faint uppercase tracking-wider mb-3">Category</h3>
+                    {{ form.category }}
+                </div>
+
+                <!-- Tags -->
+                <div class="bg-cream rounded-2xl p-5"
+                     style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                    <h3 class="text-xs font-bold text-ink-faint uppercase tracking-wider mb-3">Tags</h3>
+                    <div class="space-y-1.5 max-h-52 overflow-y-auto pr-1">
+                        {% for checkbox in form.tags %}
+                        <label class="flex items-center gap-2.5 text-sm text-ink-muted cursor-pointer hover:text-brand p-1.5 rounded-lg hover:bg-brand-faint group"
+                               style="transition: color 0.15s, background-color 0.15s;">
+                            <input type="checkbox" name="{{ checkbox.data.name }}" value="{{ checkbox.data.value }}"
+                                   {% if checkbox.data.selected %}checked{% endif %}
+                                   class="w-4 h-4 rounded cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/40"
+                                   style="accent-color: #0D3B38; border-color: rgba(13,59,56,0.30);" />
+                            <span class="font-medium">{{ checkbox.choice_label }}</span>
+                        </label>
+                        {% empty %}
+                        <p class="text-sm text-ink-faint">No tags yet.
+                            <a href="/admin/blog/tag/add/" class="text-accent hover:text-accent-dark focus-visible:outline-none focus-visible:underline" style="transition: color 0.15s;">Add tags</a> in admin.
+                        </p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Featured Image -->
+                <div class="bg-cream rounded-2xl p-5"
+                     style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                    <h3 class="text-xs font-bold text-ink-faint uppercase tracking-wider mb-3">Featured Image</h3>
+                    {% if form.instance.featured_image %}
+                    <div class="mb-3 rounded-xl overflow-hidden relative"
+                         style="border: 2px solid #C8DEDC;">
+                        <img src="{{ form.instance.featured_image.url }}" alt="Current"
+                             class="w-full object-cover" style="height: 7rem;" />
+                        <div class="absolute inset-0 pointer-events-none mix-blend-multiply"
+                             style="background: rgba(13,59,56,0.12);"></div>
+                    </div>
+                    <p class="text-xs text-ink-faint mb-3">Upload a new image to replace.</p>
+                    {% endif %}
+                    {{ form.featured_image }}
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,406 @@
+{% extends 'blog/base.html' %}
+{% load blog_tags %}
+
+{% block title %}AI-QA Blog — Home{% endblock %}
+
+{% block content %}
+
+<!-- HERO (underline hero — 21st.dev pattern) -->
+<section class="relative text-white py-28 px-4 overflow-hidden"
+         style="background-color: #0D3B38;
+                background-image:
+                    radial-gradient(ellipse 70% 60% at 90% 10%, rgba(200,96,26,0.40) 0%, transparent 62%),
+                    radial-gradient(ellipse 60% 70% at 5% 90%, rgba(46,157,150,0.38) 0%, transparent 58%),
+                    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(8,42,39,0.25) 0%, transparent 70%);">
+
+    <!-- SVG grain overlay -->
+    <svg class="absolute inset-0 w-full h-full pointer-events-none mix-blend-overlay"
+         preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"
+         style="opacity: 0.18;">
+        <filter id="hero-grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/>
+            <feColorMatrix type="saturate" values="0"/>
+        </filter>
+        <rect width="100%" height="100%" filter="url(#hero-grain)"/>
+    </svg>
+
+    <div class="relative max-w-4xl mx-auto text-center flex flex-col items-center">
+
+        <!-- Badge — anim slot 0 -->
+        <div class="anim-fiu inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full"
+             style="background: rgba(200,96,26,0.18); border: 1px solid rgba(200,96,26,0.32);">
+            <!-- Animated lightbulb -->
+            <svg class="bulb-glow flex-shrink-0" width="16" height="16" viewBox="0 0 24 24"
+                 fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <!-- Bulb body -->
+                <path d="M12 2a7 7 0 0 1 7 7c0 2.6-1.4 4.87-3.5 6.14V17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1.86C6.4 13.87 5 11.6 5 9a7 7 0 0 1 7-7z"
+                      fill="#E8A44A" opacity="0.92"/>
+                <!-- Filament glow inner -->
+                <path d="M12 2a7 7 0 0 1 7 7c0 2.6-1.4 4.87-3.5 6.14V17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1.86C6.4 13.87 5 11.6 5 9a7 7 0 0 1 7-7z"
+                      fill="#FFF3CD" opacity="0.30"/>
+                <!-- Base lines -->
+                <line x1="9" y1="21" x2="15" y2="21" stroke="#E8A44A" stroke-width="2" stroke-linecap="round"/>
+                <line x1="10" y1="18" x2="14" y2="18" stroke="#E8A44A" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="text-sm font-medium" style="color: #F5C896; font-family: 'DM Sans', system-ui, sans-serif;">
+                AI · Quality Assurance · Ideas
+            </span>
+        </div>
+
+        <!-- Headline with underline word — anim slot 1 -->
+        <h1 class="anim-fiu anim-fiu-1 font-display font-bold text-white mb-6"
+            style="font-size: clamp(2.6rem, 6.5vw, 4.8rem); line-height: 1.06; letter-spacing: -0.03em;">
+            Welcome to<br>
+            <!-- Underlined word (21st.dev pattern) -->
+            <span style="position: relative; display: inline-block; padding-bottom: 4px;">
+                <span style="font-style: normal; color: #E8A44A; font-weight: 700;">AI-QA</span>
+                <svg class="hero-underline" viewBox="0 0 170 30" fill="none"
+                     xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"
+                     aria-hidden="true">
+                    <path d="M2 9C32.8203 5.34032 108.769 -0.881146 166 3.51047"
+                          stroke="#C8601A" stroke-width="6" stroke-linecap="round"
+                          fill="none" opacity="0.9"/>
+                </svg>
+            </span>
+            <span> Blog</span>
+        </h1>
+
+        <!-- Subtext — anim slot 2 -->
+        <p class="anim-fiu anim-fiu-2 text-lg md:text-xl mb-10 max-w-xl"
+           style="color: rgba(255,255,255,0.68); line-height: 1.72;
+                  font-family: 'DM Sans', system-ui, sans-serif;">
+            Discover thoughtful articles on technology, design, and everything in between.
+        </p>
+
+        <!-- Search bar — anim slot 3 -->
+        <form method="GET" action="{% url 'blog:search' %}"
+              class="anim-fiu anim-fiu-3 flex w-full max-w-lg rounded-2xl overflow-hidden"
+              style="box-shadow: 0 8px 32px rgba(0,0,0,0.28);">
+            <input type="text" name="query" placeholder="Search articles…"
+                   class="flex-1 px-6 py-4 text-sm text-ink bg-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60" />
+            <button type="submit"
+                    class="px-7 py-4 text-cream font-semibold text-sm whitespace-nowrap active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
+                    style="background: #C8601A; transition: background-color 0.15s, transform 0.15s;"
+                    onmouseover="this.style.background='#9E4A13'"
+                    onmouseout="this.style.background='#C8601A'">
+                Search
+            </button>
+        </form>
+    </div>
+</section>
+
+<!-- MAIN GRID -->
+<div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+    <div class="flex gap-8 flex-col lg:flex-row">
+
+        <!-- POSTS -->
+        <div class="flex-1 min-w-0">
+
+            {% if active_category or active_tag %}
+            <div class="flex items-center flex-wrap gap-2 mb-5 p-3 rounded-xl"
+                 style="background: #EAF3F2; border: 1px solid #C8DEDC;">
+                <span class="text-sm text-brand font-medium">Filtering by:</span>
+                {% if active_category %}
+                    <span class="px-3 py-1 text-cream text-xs font-semibold rounded-full"
+                          style="background: #0D3B38;">{{ active_category }}</span>
+                {% endif %}
+                {% if active_tag %}
+                    <span class="px-3 py-1 text-cream text-xs font-semibold rounded-full"
+                          style="background: #C8601A;">#{{ active_tag }}</span>
+                {% endif %}
+                <a href="{% url 'blog:post_list' %}"
+                   class="text-xs font-medium ml-auto hover:text-red-600 active:opacity-70 focus-visible:outline-none focus-visible:underline"
+                   style="color: #6B6458; transition: color 0.15s;">Clear filter ×</a>
+            </div>
+            {% endif %}
+
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="font-display text-2xl font-bold text-ink"
+                    style="letter-spacing: -0.02em;">
+                    {% if active_category or active_tag %}Filtered Posts{% else %}Latest Articles{% endif %}
+                </h2>
+                <span class="text-sm text-ink-faint bg-brand-faint px-3 py-1 rounded-full">
+                    {{ page_obj.paginator.count }} post{{ page_obj.paginator.count|pluralize }}
+                </span>
+            </div>
+
+            {% if posts %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for post in posts %}
+                <article class="post-card bg-cream rounded-2xl overflow-hidden group"
+                         style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+
+                    <a href="{{ post.get_absolute_url }}" class="block relative overflow-hidden"
+                       style="aspect-ratio: 16/9;">
+                        {% if post.featured_image %}
+                        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}"
+                             class="w-full h-full object-cover"
+                             style="transition: transform 0.5s ease;" />
+                        <!-- gradient overlay -->
+                        <div class="absolute inset-0 pointer-events-none"
+                             style="background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);"></div>
+                        <!-- color treatment -->
+                        <div class="absolute inset-0 pointer-events-none mix-blend-multiply"
+                             style="background: rgba(13,59,56,0.20);"></div>
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center"
+                             style="background: linear-gradient(135deg,
+                                {% cycle '#0D3B38, #1A5C57' '#C8601A, #9E4A13' '#1A5C57, #2E9D96' '#082A27, #0D3B38' %});">
+                            <span class="font-display font-bold select-none"
+                                  style="font-size: 4rem; color: rgba(255,255,255,0.15);">{{ post.title|first|upper }}</span>
+                        </div>
+                        {% endif %}
+                    </a>
+
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            {% if post.category %}
+                            <a href="{{ post.category.get_absolute_url }}"
+                               class="tag-pill text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full hover:opacity-90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+                               style="color: #9E4A13; background: #F5E2D0;">
+                                {{ post.category.name }}
+                            </a>
+                            {% else %}<span></span>{% endif %}
+                            <span class="flex items-center gap-1 text-xs text-ink-faint">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                {{ post.reading_time }} min
+                            </span>
+                        </div>
+
+                        <h3 class="font-display text-lg font-bold text-ink mb-2 line-clamp-2 leading-snug"
+                            style="letter-spacing: -0.01em;">
+                            <a href="{{ post.get_absolute_url }}"
+                               class="hover:text-brand active:opacity-80 focus-visible:outline-none focus-visible:underline"
+                               style="transition: color 0.15s;">{{ post.title }}</a>
+                        </h3>
+
+                        <p class="text-sm text-ink-muted leading-relaxed mb-4 line-clamp-2">
+                            {{ post.excerpt|default:post.body|strip_tags|truncatechars:120 }}
+                        </p>
+
+                        {% if post.tags.exists %}
+                        <div class="flex flex-wrap gap-1 mb-4">
+                            {% for tag in post.tags.all|slice:":3" %}
+                            <a href="{{ tag.get_absolute_url }}"
+                               class="tag-pill text-xs font-medium px-2 py-0.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                               style="color: #0D3B38; background: #EAF3F2; border: 1px solid #C8DEDC;">
+                                #{{ tag.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="flex items-center justify-between pt-4"
+                             style="border-top: 1px solid rgba(13,59,56,0.08);">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full flex items-center justify-center text-cream text-xs font-bold flex-shrink-0"
+                                     style="background: #0D3B38;">
+                                    {{ post.author.first_name|first|upper|default:post.author.username|first|upper }}
+                                </div>
+                                <span class="text-xs text-ink-muted font-medium">
+                                    {{ post.author.get_full_name|default:post.author.username }}
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs text-ink-faint">
+                                <span>{{ post.created_at|date:"M j, Y" }}</span>
+                                <span class="flex items-center gap-0.5">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ post.views_count }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            <!-- PAGINATION -->
+            {% if is_paginated %}
+            <div class="flex justify-center items-center gap-2 mt-10">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}{% if active_tag %}&tag={{ active_tag }}{% endif %}"
+                   class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                   style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">
+                    &larr; Prev
+                </a>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <span class="px-4 py-2 rounded-full text-cream text-sm font-bold"
+                          style="background: #0D3B38; box-shadow: var(--shadow-sm);">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}{% if active_category %}&category={{ active_category }}{% endif %}{% if active_tag %}&tag={{ active_tag }}{% endif %}"
+                       class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                       style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}{% if active_tag %}&tag={{ active_tag }}{% endif %}"
+                   class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                   style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">
+                    Next &rarr;
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-24 bg-cream rounded-2xl"
+                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <div class="text-6xl mb-5 opacity-30">&#9998;</div>
+                <h3 class="font-display text-xl font-bold text-ink mb-2">No posts yet</h3>
+                <p class="text-ink-muted mb-6 text-sm">Be the first to share something great!</p>
+                {% if user.is_authenticated %}
+                <a href="{% url 'blog:post_create' %}"
+                   class="inline-block px-6 py-3 text-cream font-semibold rounded-full active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2"
+                   style="background: #C8601A; box-shadow: var(--shadow-accent); transition: background-color 0.15s, transform 0.15s;"
+                   onmouseover="this.style.background='#9E4A13'" onmouseout="this.style.background='#C8601A'">
+                    Write Your First Post
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}"
+                   class="inline-block px-6 py-3 text-brand font-semibold rounded-full hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2"
+                   style="border: 1.5px solid #0D3B38; transition: background-color 0.15s, transform 0.15s;">
+                    Login to Write
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- SIDEBAR -->
+        <aside class="lg:w-72 space-y-4 flex-shrink-0">
+
+            <!-- Categories -->
+            <div class="bg-cream rounded-2xl overflow-hidden"
+                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <div class="px-5 py-4 flex items-center gap-2"
+                     style="border-bottom: 1px solid rgba(13,59,56,0.08);">
+                    <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background: #EAF3F2;">
+                        <svg class="w-3.5 h-3.5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-ink text-sm">Categories</h3>
+                </div>
+                <ul class="p-3 space-y-0.5">
+                    {% for cat in categories %}
+                    <li>
+                        <a href="{{ cat.get_absolute_url }}"
+                           class="flex items-center justify-between px-3 py-2 rounded-xl group hover:bg-brand-faint active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                           style="transition: background-color 0.15s;">
+                            <span class="text-sm text-ink-muted font-medium group-hover:text-brand"
+                                  style="transition: color 0.15s;">{{ cat.name }}</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full font-semibold group-hover:bg-brand-pale group-hover:text-brand"
+                                  style="background: rgba(13,59,56,0.07); color: #6B6458; transition: background-color 0.15s, color 0.15s;">
+                                {{ cat.post_count }}
+                            </span>
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li class="px-3 py-3 text-sm text-ink-faint">No categories yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Tags Cloud -->
+            <div class="bg-cream rounded-2xl overflow-hidden"
+                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <div class="px-5 py-4 flex items-center gap-2"
+                     style="border-bottom: 1px solid rgba(13,59,56,0.08);">
+                    <span class="font-bold text-accent text-base">#</span>
+                    <h3 class="font-semibold text-ink text-sm">Popular Tags</h3>
+                </div>
+                <div class="p-4 flex flex-wrap gap-2">
+                    {% for tag in tags %}
+                    <a href="{{ tag.get_absolute_url }}"
+                       class="tag-pill text-xs font-semibold px-2.5 py-1 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                       style="color: #0D3B38; background: #EAF3F2; border: 1px solid #C8DEDC; transition: background-color 0.15s, color 0.15s;"
+                       onmouseover="this.style.background='#0D3B38';this.style.color='#FFFCF5';this.style.borderColor='#0D3B38';"
+                       onmouseout="this.style.background='#EAF3F2';this.style.color='#0D3B38';this.style.borderColor='#C8DEDC';">
+                        #{{ tag.name }}
+                        <span style="opacity: 0.6;">{{ tag.post_count }}</span>
+                    </a>
+                    {% empty %}
+                    <p class="text-sm text-ink-faint">No tags yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Recent Posts -->
+            <div class="bg-cream rounded-2xl overflow-hidden"
+                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <div class="px-5 py-4"
+                     style="border-bottom: 1px solid rgba(13,59,56,0.08);">
+                    <h3 class="font-semibold text-ink text-sm">Recent Posts</h3>
+                </div>
+                <ul class="p-4 space-y-4">
+                    {% for recent in recent_posts %}
+                    <li class="flex gap-3 group">
+                        <a href="{{ recent.get_absolute_url }}" class="flex-shrink-0 relative overflow-hidden rounded-xl"
+                           style="width: 56px; height: 56px;">
+                            {% if recent.featured_image %}
+                            <img src="{{ recent.featured_image.url }}" alt="{{ recent.title }}"
+                                 class="w-full h-full object-cover" style="transition: transform 0.3s ease;" />
+                            <div class="absolute inset-0 mix-blend-multiply"
+                                 style="background: rgba(13,59,56,0.15);"></div>
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center"
+                                 style="background: linear-gradient(135deg, #0D3B38, #1A5C57);">
+                                <span class="font-display font-bold"
+                                      style="font-size: 1.4rem; color: rgba(255,255,255,0.20);">{{ recent.title|first|upper }}</span>
+                            </div>
+                            {% endif %}
+                        </a>
+                        <div class="flex-1 min-w-0">
+                            <a href="{{ recent.get_absolute_url }}"
+                               class="text-sm font-semibold text-ink hover:text-brand active:opacity-80 focus-visible:outline-none focus-visible:underline leading-tight line-clamp-2 block"
+                               style="transition: color 0.15s;">
+                                {{ recent.title }}
+                            </a>
+                            <span class="text-xs text-ink-faint mt-1 block">{{ recent.created_at|date:"M j, Y" }}</span>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="text-sm text-ink-faint">No recent posts.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Write CTA (logged in) -->
+            {% if user.is_authenticated %}
+            <div class="rounded-2xl p-5 text-center overflow-hidden relative"
+                 style="background-color: #0D3B38;
+                        background-image: radial-gradient(ellipse 80% 60% at 80% 20%, rgba(200,96,26,0.35) 0%, transparent 60%);">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="xMidYMid slice"
+                     style="opacity: 0.15; mix-blend-mode: overlay;">
+                    <filter id="sidebar-grain"><feTurbulence type="fractalNoise" baseFrequency="0.80" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+                    <rect width="100%" height="100%" filter="url(#sidebar-grain)"/>
+                </svg>
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full mx-auto mb-3 flex items-center justify-center"
+                         style="background: rgba(200,96,26,0.25);">
+                        <svg class="w-5 h-5 text-accent-mid" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display font-bold text-cream mb-1">Got something to say?</h3>
+                    <p class="text-xs mb-4" style="color: rgba(200,222,220,0.70);">Share your thoughts with the world.</p>
+                    <a href="{% url 'blog:post_create' %}"
+                       class="inline-block px-5 py-2 text-brand font-bold rounded-full text-sm bg-cream hover:bg-parchment active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/60"
+                       style="transition: background-color 0.15s, transform 0.15s; box-shadow: var(--shadow-sm);">
+                        Write a Post
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </aside>
+
+    </div>
+</div>
+{% endblock %}
