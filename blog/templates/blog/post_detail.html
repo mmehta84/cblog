@@ -128,6 +128,44 @@
             <p class="text-xs text-ink-faint mt-4">Last updated: {{ post.updated_at|date:"F j, Y g:i A" }}</p>
             {% endif %}
 
+            <!-- Prev / Next Navigation -->
+            {% if prev_post or next_post %}
+            <div class="mt-10 pt-8 grid grid-cols-2 gap-4" style="border-top: 1px solid rgba(13,59,56,0.10);">
+                <div>
+                    {% if prev_post %}
+                    <a href="{{ prev_post.get_absolute_url }}"
+                       class="group flex flex-col gap-1 p-4 rounded-2xl h-full hover:bg-brand-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                       style="border: 1px solid rgba(13,59,56,0.10); transition: background-color 0.15s;">
+                        <span class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest" style="color:#C8601A;">
+                            <svg class="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="transition: transform 0.15s;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                            Previous
+                        </span>
+                        <span class="text-sm font-semibold text-ink group-hover:text-brand leading-snug line-clamp-2"
+                              style="transition: color 0.15s;">{{ prev_post.title }}</span>
+                    </a>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if next_post %}
+                    <a href="{{ next_post.get_absolute_url }}"
+                       class="group flex flex-col gap-1 p-4 rounded-2xl h-full text-right hover:bg-brand-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                       style="border: 1px solid rgba(13,59,56,0.10); transition: background-color 0.15s;">
+                        <span class="flex items-center justify-end gap-1.5 text-xs font-bold uppercase tracking-widest" style="color:#C8601A;">
+                            Next
+                            <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="transition: transform 0.15s;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                        <span class="text-sm font-semibold text-ink group-hover:text-brand leading-snug line-clamp-2"
+                              style="transition: color 0.15s;">{{ next_post.title }}</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Related Posts -->
             {% if related_posts %}
             <div class="mt-14">
@@ -173,6 +211,17 @@
 
         <!-- STICKY SIDEBAR -->
         <aside class="lg:w-72 space-y-4 flex-shrink-0 lg:sticky lg:top-20 lg:self-start">
+
+            <!-- TABLE OF CONTENTS (populated by JS) -->
+            <div id="toc-widget" class="bg-cream rounded-2xl overflow-hidden" style="display:none; border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <div class="px-5 py-4 flex items-center gap-2" style="border-bottom: 1px solid rgba(13,59,56,0.08);">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#C8601A;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h10M4 14h12M4 18h8"/>
+                    </svg>
+                    <h3 class="font-semibold text-ink text-sm">In This Article</h3>
+                </div>
+                <nav id="toc-nav" class="p-3 space-y-0.5 max-h-72 overflow-y-auto"></nav>
+            </div>
 
             <div class="bg-cream rounded-2xl overflow-hidden"
                  style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
@@ -237,4 +286,71 @@
 
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  // ── TABLE OF CONTENTS ──────────────────────────────────────────────
+  const content  = document.querySelector('.ck-content');
+  const tocNav   = document.getElementById('toc-nav');
+  const tocWidget= document.getElementById('toc-widget');
+  if (!content || !tocNav) return;
+
+  const headings = Array.from(content.querySelectorAll('h2, h3'));
+  if (headings.length < 2) return;
+
+  // Assign IDs
+  headings.forEach((h, i) => {
+    if (!h.id) {
+      h.id = 'toc-' + h.textContent.trim().toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + i;
+    }
+  });
+
+  // Build TOC links
+  headings.forEach(h => {
+    const isH3 = h.tagName === 'H3';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    a.dataset.tocId = h.id;
+    a.className = 'toc-link block rounded-lg text-xs leading-snug truncate focus-visible:outline-none focus-visible:underline';
+    a.style.cssText = [
+      'padding:' + (isH3 ? '5px 10px 5px 22px' : '5px 10px'),
+      'color:#6B6458',
+      'transition:color 0.15s,background-color 0.15s',
+      'font-weight:' + (isH3 ? '400' : '600'),
+    ].join(';');
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.getElementById(h.id)?.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+    tocNav.appendChild(a);
+  });
+
+  tocWidget.style.display = '';
+
+  // Active heading highlight
+  const tocLinks = tocNav.querySelectorAll('.toc-link');
+
+  function setActive(id) {
+    tocLinks.forEach(link => {
+      const on = link.dataset.tocId === id;
+      link.style.color      = on ? '#0D3B38' : '#6B6458';
+      link.style.background = on ? 'rgba(13,59,56,0.07)' : '';
+      link.style.fontWeight = on ? '700' : (link.style.paddingLeft > '12px' ? '400' : '600');
+      if (on) link.scrollIntoView({ block:'nearest' });
+    });
+  }
+
+  setActive(headings[0]?.id);
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+  }, { rootMargin:'0px 0px -60% 0px', threshold:0 });
+
+  headings.forEach(h => observer.observe(h));
+})();
+</script>
 {% endblock %}

@@ -70,6 +70,12 @@ class PostDetailView(DetailView):
         context.update(get_sidebar_context())
         context['related_posts'] = self.object.get_related_posts(count=3)
         context['search_form'] = SearchForm()
+        context['prev_post'] = Post.objects.filter(
+            status='published', created_at__lt=self.object.created_at
+        ).order_by('-created_at').first()
+        context['next_post'] = Post.objects.filter(
+            status='published', created_at__gt=self.object.created_at
+        ).order_by('created_at').first()
         return context
 
 

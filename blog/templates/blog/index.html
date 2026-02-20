@@ -388,121 +388,163 @@
 {% block extra_js %}
 <script>
 (function () {
-    const { useState, useRef } = React;
+    const { useState, useRef, useEffect } = React;
+    const e = React.createElement;
 
     function HeroSearch({ searchUrl }) {
-        const [query, setQuery] = useState('');
-        const [focused, setFocused] = useState(false);
+        const [query, setQuery]   = useState('');
+        const [focused, setFocus] = useState(false);
         const inputRef = useRef(null);
 
-        const handleSubmit = (e) => {
-            e.preventDefault();
+        // ⌘K / Ctrl+K global shortcut
+        useEffect(() => {
+            const handler = (ev) => {
+                if ((ev.metaKey || ev.ctrlKey) && ev.key === 'k') {
+                    ev.preventDefault();
+                    inputRef.current && inputRef.current.focus();
+                }
+            };
+            document.addEventListener('keydown', handler);
+            return () => document.removeEventListener('keydown', handler);
+        }, []);
+
+        const submit = (ev) => {
+            ev.preventDefault();
             if (query.trim()) window.location.href = searchUrl + '?query=' + encodeURIComponent(query.trim());
         };
 
-        const e = React.createElement;
+        // Shell styles
+        const shell = {
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            height: '52px',
+            borderRadius: '999px',
+            padding: '0 6px 0 20px',
+            gap: '10px',
+            background: focused ? 'rgba(255,255,255,0.11)' : 'rgba(255,255,255,0.07)',
+            border: focused
+                ? '1px solid rgba(255,255,255,0.28)'
+                : '1px solid rgba(255,255,255,0.12)',
+            boxShadow: focused
+                ? '0 0 0 3px rgba(200,222,220,0.12), 0 8px 32px rgba(0,0,0,0.30)'
+                : '0 4px 20px rgba(0,0,0,0.22)',
+            transition: 'background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
+            cursor: 'text',
+        };
 
-        return e('form', {
-            onSubmit: handleSubmit,
-            style: {
-                display: 'flex',
-                width: '100%',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                boxShadow: focused
-                    ? '0 8px 32px rgba(0,0,0,0.32), 0 0 0 2px rgba(200,96,26,0.5)'
-                    : '0 8px 32px rgba(0,0,0,0.28)',
-                transition: 'box-shadow 0.2s ease',
-            }
-        },
-            // Icon + Input wrapper
+        return e('form', { onSubmit: submit, style: { width: '100%' } },
             e('div', {
-                style: {
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: '#FFFCF5',
-                    paddingLeft: '20px',
-                    gap: '10px',
-                }
+                style: shell,
+                onClick: () => inputRef.current && inputRef.current.focus(),
             },
+
                 // Search icon
                 e('svg', {
-                    width: 16, height: 16, fill: 'none',
-                    stroke: focused ? '#C8601A' : '#9B9287',
-                    viewBox: '0 0 24 24',
-                    style: { flexShrink: 0, transition: 'stroke 0.2s ease' }
+                    width: 16, height: 16, fill: 'none', viewBox: '0 0 24 24',
+                    style: {
+                        flexShrink: 0,
+                        stroke: focused ? 'rgba(255,255,255,0.80)' : 'rgba(255,255,255,0.38)',
+                        transition: 'stroke 0.2s ease',
+                    }
                 },
-                    e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' })
+                    e('path', { strokeLinecap:'round', strokeLinejoin:'round', strokeWidth:'2',
+                        d:'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' })
                 ),
+
                 // Input
                 e('input', {
                     ref: inputRef,
                     type: 'text',
                     value: query,
                     onChange: (ev) => setQuery(ev.target.value),
-                    onFocus: () => setFocused(true),
-                    onBlur: () => setFocused(false),
+                    onFocus: () => setFocus(true),
+                    onBlur:  () => setFocus(false),
                     placeholder: 'Search articles\u2026',
                     style: {
                         flex: 1,
-                        padding: '16px 0',
-                        fontSize: '0.9375rem',
-                        color: '#1C1A16',
                         background: 'transparent',
                         border: 'none',
                         outline: 'none',
+                        fontSize: '0.9375rem',
+                        color: 'rgba(255,255,255,0.90)',
                         fontFamily: "'DM Sans', system-ui, sans-serif",
+                        letterSpacing: '0.005em',
                     }
                 }),
-                // Clear button
+
+                // ⌘K badge (hidden when typing)
+                !query && e('kbd', {
+                    style: {
+                        display: 'flex', alignItems: 'center', gap: '2px',
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                        background: 'rgba(255,255,255,0.08)',
+                        border: '1px solid rgba(255,255,255,0.10)',
+                        color: 'rgba(255,255,255,0.35)',
+                        fontSize: '11px',
+                        fontFamily: "'DM Sans', system-ui, sans-serif",
+                        fontWeight: '500',
+                        letterSpacing: '0.03em',
+                        flexShrink: 0,
+                        cursor: 'default',
+                        userSelect: 'none',
+                        transition: 'opacity 0.15s ease',
+                    }
+                }, '\u2318K'),
+
+                // Clear × (shown when typing)
                 query && e('button', {
                     type: 'button',
-                    onClick: () => { setQuery(''); inputRef.current && inputRef.current.focus(); },
+                    onClick: (ev) => { ev.stopPropagation(); setQuery(''); inputRef.current && inputRef.current.focus(); },
                     style: {
-                        width: '22px', height: '22px', borderRadius: '50%',
+                        width: '24px', height: '24px', borderRadius: '50%',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: 'rgba(13,59,56,0.10)', border: 'none',
-                        cursor: 'pointer', flexShrink: 0, marginRight: '8px',
-                        transition: 'background-color 0.15s ease',
+                        background: 'rgba(255,255,255,0.10)', border: 'none',
+                        cursor: 'pointer', flexShrink: 0,
+                        transition: 'background 0.15s ease',
                     },
-                    onMouseEnter: (ev) => { ev.currentTarget.style.background = 'rgba(13,59,56,0.18)'; },
-                    onMouseLeave: (ev) => { ev.currentTarget.style.background = 'rgba(13,59,56,0.10)'; },
+                    onMouseEnter: (ev) => { ev.currentTarget.style.background = 'rgba(255,255,255,0.18)'; },
+                    onMouseLeave: (ev) => { ev.currentTarget.style.background = 'rgba(255,255,255,0.10)'; },
                 },
-                    e('svg', { width: 10, height: 10, fill: 'none', stroke: '#6B6458', viewBox: '0 0 24 24' },
-                        e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2.5', d: 'M6 18L18 6M6 6l12 12' })
+                    e('svg', { width: 10, height: 10, fill:'none', stroke:'rgba(255,255,255,0.70)', viewBox:'0 0 24 24' },
+                        e('path', { strokeLinecap:'round', strokeLinejoin:'round', strokeWidth:'2.5', d:'M6 18L18 6M6 6l12 12' })
+                    )
+                ),
+
+                // Enter arrow submit button (pill, right side)
+                e('button', {
+                    type: 'submit',
+                    style: {
+                        flexShrink: 0,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        width: '40px', height: '40px', borderRadius: '50%',
+                        background: query ? 'rgba(200,96,26,0.85)' : 'rgba(255,255,255,0.06)',
+                        border: '1px solid ' + (query ? 'rgba(200,96,26,0.6)' : 'rgba(255,255,255,0.08)'),
+                        cursor: query ? 'pointer' : 'default',
+                        transition: 'background 0.2s ease, border-color 0.2s ease, transform 0.15s ease',
+                    },
+                    onMouseEnter: (ev) => { if (query) ev.currentTarget.style.background = '#C8601A'; },
+                    onMouseLeave: (ev) => { ev.currentTarget.style.background = query ? 'rgba(200,96,26,0.85)' : 'rgba(255,255,255,0.06)'; },
+                    onMouseDown:  (ev) => { if (query) ev.currentTarget.style.transform = 'scale(0.92)'; },
+                    onMouseUp:    (ev) => { ev.currentTarget.style.transform = 'scale(1)'; },
+                },
+                    e('svg', { width: 14, height: 14, fill:'none', viewBox:'0 0 24 24',
+                        style: { stroke: query ? '#fff' : 'rgba(255,255,255,0.25)', transition: 'stroke 0.2s ease' }
+                    },
+                        e('path', { strokeLinecap:'round', strokeLinejoin:'round', strokeWidth:'2',
+                            d:'M5 12h14M12 5l7 7-7 7' })
                     )
                 )
-            ),
-
-            // Submit button
-            e('button', {
-                type: 'submit',
-                style: {
-                    padding: '0 28px',
-                    background: '#C8601A',
-                    color: '#FFFCF5',
-                    fontFamily: "'DM Sans', system-ui, sans-serif",
-                    fontWeight: 600,
-                    fontSize: '0.9375rem',
-                    border: 'none',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    transition: 'background-color 0.15s ease, transform 0.15s ease',
-                    flexShrink: 0,
-                },
-                onMouseEnter: (ev) => { ev.currentTarget.style.background = '#9E4A13'; },
-                onMouseLeave: (ev) => { ev.currentTarget.style.background = '#C8601A'; },
-                onMouseDown:  (ev) => { ev.currentTarget.style.transform = 'scale(0.98)'; },
-                onMouseUp:    (ev) => { ev.currentTarget.style.transform = 'scale(1)'; },
-            }, 'Search')
+            )
         );
     }
 
     const container = document.getElementById('react-hero-search');
     if (container) {
         ReactDOM.createRoot(container).render(
-            React.createElement(HeroSearch, { searchUrl: container.dataset.searchUrl })
+            e(HeroSearch, { searchUrl: container.dataset.searchUrl })
         );
     }
 })();
