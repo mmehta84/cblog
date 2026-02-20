@@ -218,20 +218,10 @@
                 </div>
             </a>
 
-            <!-- Search (desktop) -->
-            <form method="GET" action="{% url 'blog:search' %}" class="hidden md:flex flex-1 max-w-sm mx-6">
-                <div class="relative w-full">
-                    <input type="text" name="query" placeholder="Search articles…"
-                           value="{{ request.GET.query|default:'' }}"
-                           class="w-full pl-10 pr-4 py-2 text-sm text-ink rounded-full bg-parchment focus:outline-none focus-visible:ring-2"
-                           style="border: 1px solid rgba(13,59,56,0.18); focus:ring-color: #0D3B38;" />
-                    <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                        <svg class="w-4 h-4 text-ink-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </div>
-                </div>
-            </form>
+            <!-- Search (React) -->
+            <div class="hidden md:flex flex-1 max-w-sm mx-6 justify-start">
+                <div id="react-search-bar" data-search-url="{% url 'blog:search' %}"></div>
+            </div>
 
             <!-- Nav Links -->
             <div class="flex items-center gap-1">
@@ -345,6 +335,120 @@
     </div>
 </footer>
 
+<!-- React (loaded before extra_js so child pages can use it) -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
 {% block extra_js %}{% endblock %}
+<script>
+(function () {
+    const { useState, useRef } = React;
+
+    function SearchBar({ searchUrl }) {
+        const [isOpen, setIsOpen] = useState(false);
+        const [query, setQuery] = useState('');
+        const inputRef = useRef(null);
+
+        const open = () => {
+            setIsOpen(true);
+            setTimeout(() => inputRef.current && inputRef.current.focus(), 50);
+        };
+
+        const close = () => { setIsOpen(false); setQuery(''); };
+
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            if (query.trim()) window.location.href = searchUrl + '?query=' + encodeURIComponent(query.trim());
+        };
+
+        const handleKeyDown = (e) => { if (e.key === 'Escape') close(); };
+
+        const e = React.createElement;
+
+        return e('div', { style: { display: 'flex', alignItems: 'center', gap: '4px' } },
+            e('form', { onSubmit: handleSubmit, style: { display: 'flex', alignItems: 'center', gap: '4px' } },
+
+                // Expanding input
+                e('div', {
+                    style: {
+                        overflow: 'hidden',
+                        width: isOpen ? '220px' : '0px',
+                        opacity: isOpen ? 1 : 0,
+                        transition: 'width 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease',
+                    }
+                },
+                    e('input', {
+                        ref: inputRef,
+                        type: 'text',
+                        value: query,
+                        onChange: (ev) => setQuery(ev.target.value),
+                        onKeyDown: handleKeyDown,
+                        placeholder: 'Search articles\u2026',
+                        style: {
+                            width: '220px',
+                            padding: '7px 14px',
+                            fontSize: '0.875rem',
+                            color: '#1C1A16',
+                            background: '#F8F4ED',
+                            border: '1px solid rgba(13,59,56,0.18)',
+                            borderRadius: '9999px',
+                            outline: 'none',
+                            fontFamily: "'DM Sans', system-ui, sans-serif",
+                        }
+                    })
+                ),
+
+                // Search / submit button
+                e('button', {
+                    type: isOpen ? 'submit' : 'button',
+                    onClick: !isOpen ? open : undefined,
+                    title: isOpen ? 'Search' : 'Open search',
+                    style: {
+                        width: '36px', height: '36px', borderRadius: '50%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: isOpen ? '#0D3B38' : 'transparent',
+                        border: 'none', cursor: 'pointer', flexShrink: 0,
+                        transition: 'background-color 0.2s ease, transform 0.15s ease',
+                    },
+                    onMouseEnter: (ev) => { ev.currentTarget.style.transform = 'scale(1.08)'; },
+                    onMouseLeave: (ev) => { ev.currentTarget.style.transform = 'scale(1)'; },
+                    onMouseDown:  (ev) => { ev.currentTarget.style.transform = 'scale(0.94)'; },
+                    onMouseUp:    (ev) => { ev.currentTarget.style.transform = 'scale(1)'; },
+                },
+                    e('svg', { width: 16, height: 16, fill: 'none', stroke: isOpen ? '#FFFCF5' : '#6B6458', viewBox: '0 0 24 24' },
+                        e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' })
+                    )
+                )
+            ),
+
+            // Close button
+            isOpen && e('button', {
+                type: 'button',
+                onClick: close,
+                title: 'Close',
+                style: {
+                    width: '28px', height: '28px', borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: 'rgba(13,59,56,0.08)', border: 'none', cursor: 'pointer',
+                    flexShrink: 0, transition: 'background-color 0.15s ease',
+                },
+                onMouseEnter: (ev) => { ev.currentTarget.style.background = 'rgba(13,59,56,0.16)'; },
+                onMouseLeave: (ev) => { ev.currentTarget.style.background = 'rgba(13,59,56,0.08)'; },
+            },
+                e('svg', { width: 12, height: 12, fill: 'none', stroke: '#6B6458', viewBox: '0 0 24 24' },
+                    e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M6 18L18 6M6 6l12 12' })
+                )
+            )
+        );
+    }
+
+    const container = document.getElementById('react-search-bar');
+    if (container) {
+        ReactDOM.createRoot(container).render(
+            React.createElement(SearchBar, { searchUrl: container.dataset.searchUrl })
+        );
+    }
+})();
+</script>
 </body>
 </html>
