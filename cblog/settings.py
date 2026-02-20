@@ -19,12 +19,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Django extras
+    'django.contrib.sitemaps',
+    'django.contrib.sites',
     # Third-party
     'ckeditor',
     'ckeditor_uploader',
     # Local
     'blog',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
