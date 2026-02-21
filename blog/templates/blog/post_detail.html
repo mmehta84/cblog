@@ -334,20 +334,24 @@
   // Active heading highlight
   const tocLinks = tocNav.querySelectorAll('.toc-link');
 
-  function setActive(id) {
+  function setActive(id, scrollToc) {
     tocLinks.forEach(link => {
       const on = link.dataset.tocId === id;
       link.style.color      = on ? '#0D3B38' : '#6B6458';
       link.style.background = on ? 'rgba(13,59,56,0.07)' : '';
       link.style.fontWeight = on ? '700' : (link.style.paddingLeft > '12px' ? '400' : '600');
-      if (on) link.scrollIntoView({ block:'nearest' });
+      // Only scroll the TOC nav list itself (not the page) and only on desktop
+      if (on && scrollToc && window.innerWidth >= 1024) {
+        link.scrollIntoView({ block:'nearest' });
+      }
     });
   }
 
-  setActive(headings[0]?.id);
+  // Don't call setActive on init — avoids mobile page jump
+  setActive(headings[0]?.id, false);
 
   const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+    entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id, true); });
   }, { rootMargin:'0px 0px -60% 0px', threshold:0 });
 
   headings.forEach(h => observer.observe(h));
