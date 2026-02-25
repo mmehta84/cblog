@@ -1,13 +1,32 @@
 {% extends 'blog/base.html' %}
 {% load blog_tags %}
 
+{% block extra_head %}
+<style>
+    @keyframes robot-float {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .robot-float {
+        animation: robot-float 4s ease-in-out infinite;
+    }
+</style>
+{% endblock %}
+
 {% block title %}AI-QA Blog — Home{% endblock %}
 
 {% block content %}
 
-<!-- HERO (underline hero — 21st.dev pattern) -->
-<section class="relative text-white py-28 px-4 overflow-hidden"
-         style="background-color: #0D3B38;
+<!-- HERO — two-column split with Spline robot -->
+<section class="relative text-white overflow-hidden" style="background-color: #0D3B38; min-height: 520px;
                 background-image:
                     radial-gradient(ellipse 70% 60% at 90% 10%, rgba(200,96,26,0.40) 0%, transparent 62%),
                     radial-gradient(ellipse 60% 70% at 5% 90%, rgba(46,157,150,0.38) 0%, transparent 58%),
@@ -15,67 +34,94 @@
 
     <!-- SVG grain overlay -->
     <svg class="absolute inset-0 w-full h-full pointer-events-none mix-blend-overlay"
-         preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"
-         style="opacity: 0.18;">
+        preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="opacity: 0.18;">
         <filter id="hero-grain">
-            <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/>
-            <feColorMatrix type="saturate" values="0"/>
+            <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
         </filter>
-        <rect width="100%" height="100%" filter="url(#hero-grain)"/>
+        <rect width="100%" height="100%" filter="url(#hero-grain)" />
     </svg>
 
-    <div class="relative max-w-4xl mx-auto text-center flex flex-col items-center">
+    <!-- Two-column layout -->
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        style="display: grid; grid-template-columns: 1fr; align-items: center; min-height: 520px;">
 
-        <!-- Badge — anim slot 0 -->
-        <div class="anim-fiu inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full"
-             style="background: rgba(200,96,26,0.18); border: 1px solid rgba(200,96,26,0.32);">
-            <!-- Animated lightbulb -->
-            <svg class="bulb-glow flex-shrink-0" width="16" height="16" viewBox="0 0 24 24"
-                 fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Bulb body -->
-                <path d="M12 2a7 7 0 0 1 7 7c0 2.6-1.4 4.87-3.5 6.14V17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1.86C6.4 13.87 5 11.6 5 9a7 7 0 0 1 7-7z"
-                      fill="#E8A44A" opacity="0.92"/>
-                <!-- Filament glow inner -->
-                <path d="M12 2a7 7 0 0 1 7 7c0 2.6-1.4 4.87-3.5 6.14V17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1.86C6.4 13.87 5 11.6 5 9a7 7 0 0 1 7-7z"
-                      fill="#FFF3CD" opacity="0.30"/>
-                <!-- Base lines -->
-                <line x1="9" y1="21" x2="15" y2="21" stroke="#E8A44A" stroke-width="2" stroke-linecap="round"/>
-                <line x1="10" y1="18" x2="14" y2="18" stroke="#E8A44A" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-            <span class="text-sm font-medium" style="color: #F5C896; font-family: 'DM Sans', system-ui, sans-serif;">
-                AI · Quality Assurance · Ideas
-            </span>
+        <!-- On lg+ override to two columns -->
+        <style>
+            @media (min-width: 1024px) {
+                #hero-grid {
+                    grid-template-columns: 1fr 1fr !important;
+                }
+            }
+        </style>
+        <div id="hero-grid"
+            style="display: grid; grid-template-columns: 1fr; align-items: center; min-height: 520px; gap: 0;">
+
+            <!-- LEFT — content -->
+            <div class="py-20 flex flex-col items-start">
+
+                <!-- Badge — anim slot 0 -->
+                <div class="anim-fiu inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full"
+                    style="background: rgba(200,96,26,0.18); border: 1px solid rgba(200,96,26,0.32);">
+                    <svg class="bulb-glow flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path
+                            d="M12 2a7 7 0 0 1 7 7c0 2.6-1.4 4.87-3.5 6.14V17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1.86C6.4 13.87 5 11.6 5 9a7 7 0 0 1 7-7z"
+                            fill="#E8A44A" opacity="0.92" />
+                        <path
+                            d="M12 2a7 7 0 0 1 7 7c0 2.6-1.4 4.87-3.5 6.14V17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1.86C6.4 13.87 5 11.6 5 9a7 7 0 0 1 7-7z"
+                            fill="#FFF3CD" opacity="0.30" />
+                        <line x1="9" y1="21" x2="15" y2="21" stroke="#E8A44A" stroke-width="2" stroke-linecap="round" />
+                        <line x1="10" y1="18" x2="14" y2="18" stroke="#E8A44A" stroke-width="1.5"
+                            stroke-linecap="round" />
+                    </svg>
+                    <span class="text-sm font-medium"
+                        style="color: #F5C896; font-family: 'DM Sans', system-ui, sans-serif;">
+                        AI · Quality Assurance · Ideas
+                    </span>
+                </div>
+
+                <!-- Headline — anim slot 1 -->
+                <h1 class="anim-fiu anim-fiu-1 font-display font-bold text-white mb-6"
+                    style="font-size: clamp(2.4rem, 5.5vw, 4.2rem); line-height: 1.06; letter-spacing: -0.03em;">
+                    Welcome to<br>
+                    <span style="position: relative; display: inline-block; padding-bottom: 4px;">
+                        <span style="font-style: normal; color: #E8A44A; font-weight: 700;">AI-QA</span>
+                        <svg class="hero-underline" viewBox="0 0 170 30" fill="none" xmlns="http://www.w3.org/2000/svg"
+                            preserveAspectRatio="none" aria-hidden="true">
+                            <path d="M2 9C32.8203 5.34032 108.769 -0.881146 166 3.51047" stroke="#C8601A"
+                                stroke-width="6" stroke-linecap="round" fill="none" opacity="0.9" />
+                        </svg>
+                    </span>
+                    <span> Blog</span>
+                </h1>
+
+                <!-- Subtext — anim slot 2 -->
+                <p class="anim-fiu anim-fiu-2 text-lg md:text-xl mb-10 max-w-md" style="color: rgba(255,255,255,0.68); line-height: 1.72;
+                          font-family: 'DM Sans', system-ui, sans-serif;">
+                    Discover thoughtful articles on technology, design, and everything in between.
+                </p>
+
+                <!-- Search bar — anim slot 3 -->
+                <div id="react-hero-search" data-search-url="{% url 'blog:search' %}" class="anim-fiu anim-fiu-3 w-full"
+                    style="max-width: 480px;"></div>
+            </div>
+
+            <!-- RIGHT — Spline robot (desktop only) -->
+            <div class="hidden lg:flex items-center justify-center" style="height: 520px; position: relative;">
+                <!-- Soft glow behind robot -->
+                <div style="position: absolute; inset: 0;
+                            background: radial-gradient(ellipse 70% 70% at 50% 55%, rgba(46,157,150,0.22) 0%, transparent 70%);
+                            pointer-events: none;"></div>
+                <div class="robot-float" style="width: 100%; height: 100%; position: relative; z-index: 1;">
+                    <iframe src="https://my.spline.design/genkubgreetingrobot-uY7RHLN5h78MLJcyQnubMQ00/" frameborder="0"
+                        style="width: 100%; height: 100%; border: none; background: transparent;" loading="lazy"
+                        title="GENKUB Greeting Robot">
+                    </iframe>
+                </div>
+            </div>
+
         </div>
-
-        <!-- Headline with underline word — anim slot 1 -->
-        <h1 class="anim-fiu anim-fiu-1 font-display font-bold text-white mb-6"
-            style="font-size: clamp(2.6rem, 6.5vw, 4.8rem); line-height: 1.06; letter-spacing: -0.03em;">
-            Welcome to<br>
-            <!-- Underlined word (21st.dev pattern) -->
-            <span style="position: relative; display: inline-block; padding-bottom: 4px;">
-                <span style="font-style: normal; color: #E8A44A; font-weight: 700;">AI-QA</span>
-                <svg class="hero-underline" viewBox="0 0 170 30" fill="none"
-                     xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"
-                     aria-hidden="true">
-                    <path d="M2 9C32.8203 5.34032 108.769 -0.881146 166 3.51047"
-                          stroke="#C8601A" stroke-width="6" stroke-linecap="round"
-                          fill="none" opacity="0.9"/>
-                </svg>
-            </span>
-            <span> Blog</span>
-        </h1>
-
-        <!-- Subtext — anim slot 2 -->
-        <p class="anim-fiu anim-fiu-2 text-lg md:text-xl mb-10 max-w-xl"
-           style="color: rgba(255,255,255,0.68); line-height: 1.72;
-                  font-family: 'DM Sans', system-ui, sans-serif;">
-            Discover thoughtful articles on technology, design, and everything in between.
-        </p>
-
-        <!-- Search bar — React hero search -->
-        <div id="react-hero-search"
-             data-search-url="{% url 'blog:search' %}"
-             class="anim-fiu anim-fiu-3 w-full max-w-lg"></div>
     </div>
 </section>
 
@@ -88,25 +134,24 @@
 
             {% if active_category or active_tag %}
             <div class="flex items-center flex-wrap gap-2 mb-5 p-3 rounded-xl"
-                 style="background: #EAF3F2; border: 1px solid #C8DEDC;">
+                style="background: #EAF3F2; border: 1px solid #C8DEDC;">
                 <span class="text-sm text-brand font-medium">Filtering by:</span>
                 {% if active_category %}
-                    <span class="px-3 py-1 text-cream text-xs font-semibold rounded-full"
-                          style="background: #0D3B38;">{{ active_category }}</span>
+                <span class="px-3 py-1 text-cream text-xs font-semibold rounded-full" style="background: #0D3B38;">{{
+                    active_category }}</span>
                 {% endif %}
                 {% if active_tag %}
-                    <span class="px-3 py-1 text-cream text-xs font-semibold rounded-full"
-                          style="background: #C8601A;">#{{ active_tag }}</span>
+                <span class="px-3 py-1 text-cream text-xs font-semibold rounded-full" style="background: #C8601A;">#{{
+                    active_tag }}</span>
                 {% endif %}
                 <a href="{% url 'blog:post_list' %}"
-                   class="text-xs font-medium ml-auto hover:text-red-600 active:opacity-70 focus-visible:outline-none focus-visible:underline"
-                   style="color: #6B6458; transition: color 0.15s;">Clear filter ×</a>
+                    class="text-xs font-medium ml-auto hover:text-red-600 active:opacity-70 focus-visible:outline-none focus-visible:underline"
+                    style="color: #6B6458; transition: color 0.15s;">Clear filter ×</a>
             </div>
             {% endif %}
 
             <div class="flex items-center justify-between mb-6">
-                <h2 class="font-display text-2xl font-bold text-ink"
-                    style="letter-spacing: -0.02em;">
+                <h2 class="font-display text-2xl font-bold text-ink" style="letter-spacing: -0.02em;">
                     {% if active_category or active_tag %}Filtered Posts{% else %}Latest Articles{% endif %}
                 </h2>
                 <span class="text-sm text-ink-faint bg-brand-faint px-3 py-1 rounded-full">
@@ -116,41 +161,57 @@
 
             {% if posts %}
             <style>
-                .arrow-link:hover .arrow-box { background: #0D3B38; border-color: #0D3B38; }
-                .arrow-link:hover .arrow-icon-exit { transform: translateX(32px); opacity: 0; }
-                .arrow-link:hover .arrow-icon-enter { left: 8px; }
+                .arrow-link:hover .arrow-box {
+                    background: #0D3B38;
+                    border-color: #0D3B38;
+                }
+
+                .arrow-link:hover .arrow-icon-exit {
+                    transform: translateX(32px);
+                    opacity: 0;
+                }
+
+                .arrow-link:hover .arrow-icon-enter {
+                    left: 8px;
+                }
+
                 .arrow-link:hover .arrow-icon-exit,
-                .arrow-link:hover .arrow-icon-enter { color: #FFFCF5; }
-                .blog-card:hover img { transform: scale(1.04); }
+                .arrow-link:hover .arrow-icon-enter {
+                    color: #FFFCF5;
+                }
+
+                .blog-card:hover img {
+                    transform: scale(1.04);
+                }
             </style>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for post in posts %}
                 <article class="blog-card overflow-hidden bg-cream"
-                         style="border: 1px solid rgba(13,59,56,0.15); transition: box-shadow 0.25s ease;"
-                         onmouseenter="this.style.boxShadow='0 4px 24px rgba(13,59,56,0.13)'"
-                         onmouseleave="this.style.boxShadow='none'">
+                    style="border: 1px solid rgba(13,59,56,0.15); transition: box-shadow 0.25s ease;"
+                    onmouseenter="this.style.boxShadow='0 4px 24px rgba(13,59,56,0.13)'"
+                    onmouseleave="this.style.boxShadow='none'">
 
                     <!-- 16:9 image -->
                     <a href="{{ post.get_absolute_url }}" class="block relative overflow-hidden"
-                       style="aspect-ratio: 16/9;">
+                        style="aspect-ratio: 16/9;">
                         {% if post.featured_image %}
                         <img src="{{ post.featured_image.url }}" alt="{{ post.title }}"
-                             class="w-full h-full object-cover"
-                             style="transition: transform 0.5s ease;" />
+                            class="w-full h-full object-cover" style="transition: transform 0.5s ease;" />
                         {% else %}
                         <div class="w-full h-full flex items-center justify-center"
-                             style="background: linear-gradient(135deg, {% cycle '#0D3B38, #1A5C57' '#C8601A, #9E4A13' '#1A5C57, #2E9D96' '#082A27, #0D3B38' %});">
+                            style="background: linear-gradient(135deg, {% cycle '#0D3B38, #1A5C57' '#C8601A, #9E4A13' '#1A5C57, #2E9D96' '#082A27, #0D3B38' %});">
                             <span class="font-display font-bold select-none"
-                                  style="font-size: 4rem; color: rgba(255,255,255,0.15);">{{ post.title|first|upper }}</span>
+                                style="font-size: 4rem; color: rgba(255,255,255,0.15);">{{ post.title|first|upper
+                                }}</span>
                         </div>
                         {% endif %}
                         <!-- Subtle color overlay -->
                         <div class="absolute inset-0 pointer-events-none mix-blend-multiply"
-                             style="background: rgba(13,59,56,0.08);"></div>
+                            style="background: rgba(13,59,56,0.08);"></div>
                         <!-- Category badge top-left -->
                         {% if post.category %}
                         <span class="absolute top-0 left-0 font-bold text-[10px] uppercase tracking-wider px-3 py-1"
-                              style="background: #FFFCF5; color: #0D3B38; font-family: 'DM Sans', system-ui, sans-serif;">
+                            style="background: #FFFCF5; color: #0D3B38; font-family: 'DM Sans', system-ui, sans-serif;">
                             #{{ post.category.name }}
                         </span>
                         {% endif %}
@@ -161,35 +222,39 @@
                         <h3 class="font-display font-normal text-ink mb-2 line-clamp-2 leading-snug"
                             style="font-size: 1.1rem; letter-spacing: -0.01em;">
                             <a href="{{ post.get_absolute_url }}"
-                               class="hover:text-brand focus-visible:outline-none focus-visible:underline"
-                               style="transition: color 0.15s;">{{ post.title }}</a>
+                                class="hover:text-brand focus-visible:outline-none focus-visible:underline"
+                                style="transition: color 0.15s;">{{ post.title }}</a>
                         </h3>
                         <p class="text-xs text-ink-muted leading-relaxed mb-5 line-clamp-2"
-                           style="font-family: 'DM Sans', system-ui, sans-serif;">
+                            style="font-family: 'DM Sans', system-ui, sans-serif;">
                             {{ post.excerpt|default:post.body|strip_tags|truncatechars:120 }}
                         </p>
 
                         <div class="flex items-center justify-between">
                             <!-- Animated arrow -->
                             <a href="{{ post.get_absolute_url }}"
-                               class="arrow-link flex items-center gap-2 text-xs font-medium text-ink hover:text-brand focus-visible:outline-none"
-                               style="font-family: 'DM Sans', system-ui, sans-serif; transition: color 0.15s;">
+                                class="arrow-link flex items-center gap-2 text-xs font-medium text-ink hover:text-brand focus-visible:outline-none"
+                                style="font-family: 'DM Sans', system-ui, sans-serif; transition: color 0.15s;">
                                 <span class="arrow-box relative overflow-hidden p-2 flex-shrink-0"
-                                      style="border: 1px solid rgba(13,59,56,0.22); transition: background-color 0.3s ease, border-color 0.3s ease;">
-                                    <svg class="arrow-icon-exit h-3 w-3 block" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                         style="transition: transform 0.5s ease-in, opacity 0.5s ease-in, color 0.3s ease;">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                    style="border: 1px solid rgba(13,59,56,0.22); transition: background-color 0.3s ease, border-color 0.3s ease;">
+                                    <svg class="arrow-icon-exit h-3 w-3 block" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        style="transition: transform 0.5s ease-in, opacity 0.5s ease-in, color 0.3s ease;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                     </svg>
-                                    <svg class="arrow-icon-enter h-3 w-3 absolute top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                         style="left: -16px; transition: left 0.5s ease-in-out, color 0.3s ease;">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                    <svg class="arrow-icon-enter h-3 w-3 absolute top-1/2 -translate-y-1/2" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24"
+                                        style="left: -16px; transition: left 0.5s ease-in-out, color 0.3s ease;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                     </svg>
                                 </span>
                                 Read more
                             </a>
                             <!-- Date + rule -->
                             <span class="flex items-center gap-2 text-[10px] text-ink-faint flex-shrink-0"
-                                  style="font-family: 'DM Sans', system-ui, sans-serif;">
+                                style="font-family: 'DM Sans', system-ui, sans-serif;">
                                 {{ post.created_at|date:"M j, Y" }}
                                 <span class="block w-8 border-t" style="border-color: rgba(13,59,56,0.18);"></span>
                             </span>
@@ -204,48 +269,49 @@
             <div class="flex justify-center items-center gap-2 mt-10">
                 {% if page_obj.has_previous %}
                 <a href="?page={{ page_obj.previous_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}{% if active_tag %}&tag={{ active_tag }}{% endif %}"
-                   class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-                   style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">
+                    class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                    style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">
                     &larr; Prev
                 </a>
                 {% endif %}
                 {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                    <span class="px-4 py-2 rounded-full text-cream text-sm font-bold"
-                          style="background: #0D3B38; box-shadow: var(--shadow-sm);">{{ num }}</span>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <a href="?page={{ num }}{% if active_category %}&category={{ active_category }}{% endif %}{% if active_tag %}&tag={{ active_tag }}{% endif %}"
-                       class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-                       style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">{{ num }}</a>
+                {% if page_obj.number == num %}
+                <span class="px-4 py-2 rounded-full text-cream text-sm font-bold"
+                    style="background: #0D3B38; box-shadow: var(--shadow-sm);">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a
+                    href="?page={{ num }}{% if active_category %}&category={{ active_category }}{% endif %}{% if active_tag %}&tag={{ active_tag }}{% endif %}"
+                    class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                    style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">
+                    {{ num }}</a>
                     {% endif %}
-                {% endfor %}
-                {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}{% if active_tag %}&tag={{ active_tag }}{% endif %}"
-                   class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-                   style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">
-                    Next &rarr;
-                </a>
-                {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}{% if active_tag %}&tag={{ active_tag }}{% endif %}"
+                        class="px-4 py-2 rounded-full text-sm font-medium text-ink-muted bg-cream hover:text-brand hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                        style="border: 1px solid rgba(13,59,56,0.14); transition: color 0.15s, background-color 0.15s, transform 0.15s;">
+                        Next &rarr;
+                    </a>
+                    {% endif %}
             </div>
             {% endif %}
 
             {% else %}
             <div class="text-center py-24 bg-cream rounded-2xl"
-                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
                 <div class="text-6xl mb-5 opacity-30">&#9998;</div>
                 <h3 class="font-display text-xl font-bold text-ink mb-2">No posts yet</h3>
                 <p class="text-ink-muted mb-6 text-sm">Be the first to share something great!</p>
                 {% if user.is_authenticated %}
                 <a href="{% url 'blog:post_create' %}"
-                   class="inline-block px-6 py-3 text-cream font-semibold rounded-full active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2"
-                   style="background: #C8601A; box-shadow: var(--shadow-accent); transition: background-color 0.15s, transform 0.15s;"
-                   onmouseover="this.style.background='#9E4A13'" onmouseout="this.style.background='#C8601A'">
+                    class="inline-block px-6 py-3 text-cream font-semibold rounded-full active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2"
+                    style="background: #C8601A; box-shadow: var(--shadow-accent); transition: background-color 0.15s, transform 0.15s;"
+                    onmouseover="this.style.background='#9E4A13'" onmouseout="this.style.background='#C8601A'">
                     Write Your First Post
                 </a>
                 {% else %}
                 <a href="{% url 'login' %}"
-                   class="inline-block px-6 py-3 text-brand font-semibold rounded-full hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2"
-                   style="border: 1.5px solid #0D3B38; transition: background-color 0.15s, transform 0.15s;">
+                    class="inline-block px-6 py-3 text-brand font-semibold rounded-full hover:bg-brand-faint active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2"
+                    style="border: 1.5px solid #0D3B38; transition: background-color 0.15s, transform 0.15s;">
                     Login to Write
                 </a>
                 {% endif %}
@@ -258,12 +324,12 @@
 
             <!-- Categories -->
             <div class="bg-cream rounded-2xl overflow-hidden"
-                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
-                <div class="px-5 py-4 flex items-center gap-2"
-                     style="border-bottom: 1px solid rgba(13,59,56,0.08);">
+                style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <div class="px-5 py-4 flex items-center gap-2" style="border-bottom: 1px solid rgba(13,59,56,0.08);">
                     <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background: #EAF3F2;">
                         <svg class="w-3.5 h-3.5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h7" />
                         </svg>
                     </div>
                     <h3 class="font-semibold text-ink text-sm">Categories</h3>
@@ -272,12 +338,13 @@
                     {% for cat in categories %}
                     <li>
                         <a href="{{ cat.get_absolute_url }}"
-                           class="flex items-center justify-between px-3 py-2 rounded-xl group hover:bg-brand-faint active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-                           style="transition: background-color 0.15s;">
+                            class="flex items-center justify-between px-3 py-2 rounded-xl group hover:bg-brand-faint active:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                            style="transition: background-color 0.15s;">
                             <span class="text-sm text-ink-muted font-medium group-hover:text-brand"
-                                  style="transition: color 0.15s;">{{ cat.name }}</span>
-                            <span class="text-xs px-2 py-0.5 rounded-full font-semibold group-hover:bg-brand-pale group-hover:text-brand"
-                                  style="background: rgba(13,59,56,0.07); color: #6B6458; transition: background-color 0.15s, color 0.15s;">
+                                style="transition: color 0.15s;">{{ cat.name }}</span>
+                            <span
+                                class="text-xs px-2 py-0.5 rounded-full font-semibold group-hover:bg-brand-pale group-hover:text-brand"
+                                style="background: rgba(13,59,56,0.07); color: #6B6458; transition: background-color 0.15s, color 0.15s;">
                                 {{ cat.post_count }}
                             </span>
                         </a>
@@ -290,19 +357,18 @@
 
             <!-- Tags Cloud -->
             <div class="bg-cream rounded-2xl overflow-hidden"
-                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
-                <div class="px-5 py-4 flex items-center gap-2"
-                     style="border-bottom: 1px solid rgba(13,59,56,0.08);">
+                style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <div class="px-5 py-4 flex items-center gap-2" style="border-bottom: 1px solid rgba(13,59,56,0.08);">
                     <span class="font-bold text-accent text-base">#</span>
                     <h3 class="font-semibold text-ink text-sm">Popular Tags</h3>
                 </div>
                 <div class="p-4 flex flex-wrap gap-2">
                     {% for tag in tags %}
                     <a href="{{ tag.get_absolute_url }}"
-                       class="tag-pill text-xs font-semibold px-2.5 py-1 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-                       style="color: #0D3B38; background: #EAF3F2; border: 1px solid #C8DEDC; transition: background-color 0.15s, color 0.15s;"
-                       onmouseover="this.style.background='#0D3B38';this.style.color='#FFFCF5';this.style.borderColor='#0D3B38';"
-                       onmouseout="this.style.background='#EAF3F2';this.style.color='#0D3B38';this.style.borderColor='#C8DEDC';">
+                        class="tag-pill text-xs font-semibold px-2.5 py-1 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                        style="color: #0D3B38; background: #EAF3F2; border: 1px solid #C8DEDC; transition: background-color 0.15s, color 0.15s;"
+                        onmouseover="this.style.background='#0D3B38';this.style.color='#FFFCF5';this.style.borderColor='#0D3B38';"
+                        onmouseout="this.style.background='#EAF3F2';this.style.color='#0D3B38';this.style.borderColor='#C8DEDC';">
                         #{{ tag.name }}
                         <span style="opacity: 0.6;">{{ tag.post_count }}</span>
                     </a>
@@ -314,33 +380,34 @@
 
             <!-- Recent Posts -->
             <div class="bg-cream rounded-2xl overflow-hidden"
-                 style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
-                <div class="px-5 py-4"
-                     style="border-bottom: 1px solid rgba(13,59,56,0.08);">
+                style="border: 1px solid rgba(13,59,56,0.10); box-shadow: var(--shadow-sm);">
+                <div class="px-5 py-4" style="border-bottom: 1px solid rgba(13,59,56,0.08);">
                     <h3 class="font-semibold text-ink text-sm">Recent Posts</h3>
                 </div>
                 <ul class="p-4 space-y-4">
                     {% for recent in recent_posts %}
                     <li class="flex gap-3 group">
-                        <a href="{{ recent.get_absolute_url }}" class="flex-shrink-0 relative overflow-hidden rounded-xl"
-                           style="width: 56px; height: 56px;">
+                        <a href="{{ recent.get_absolute_url }}"
+                            class="flex-shrink-0 relative overflow-hidden rounded-xl"
+                            style="width: 56px; height: 56px;">
                             {% if recent.featured_image %}
                             <img src="{{ recent.featured_image.url }}" alt="{{ recent.title }}"
-                                 class="w-full h-full object-cover" style="transition: transform 0.3s ease;" />
-                            <div class="absolute inset-0 mix-blend-multiply"
-                                 style="background: rgba(13,59,56,0.15);"></div>
+                                class="w-full h-full object-cover" style="transition: transform 0.3s ease;" />
+                            <div class="absolute inset-0 mix-blend-multiply" style="background: rgba(13,59,56,0.15);">
+                            </div>
                             {% else %}
                             <div class="w-full h-full flex items-center justify-center"
-                                 style="background: linear-gradient(135deg, #0D3B38, #1A5C57);">
+                                style="background: linear-gradient(135deg, #0D3B38, #1A5C57);">
                                 <span class="font-display font-bold"
-                                      style="font-size: 1.4rem; color: rgba(255,255,255,0.20);">{{ recent.title|first|upper }}</span>
+                                    style="font-size: 1.4rem; color: rgba(255,255,255,0.20);">{{
+                                    recent.title|first|upper }}</span>
                             </div>
                             {% endif %}
                         </a>
                         <div class="flex-1 min-w-0">
                             <a href="{{ recent.get_absolute_url }}"
-                               class="text-sm font-semibold text-ink hover:text-brand active:opacity-80 focus-visible:outline-none focus-visible:underline leading-tight line-clamp-2 block"
-                               style="transition: color 0.15s;">
+                                class="text-sm font-semibold text-ink hover:text-brand active:opacity-80 focus-visible:outline-none focus-visible:underline leading-tight line-clamp-2 block"
+                                style="transition: color 0.15s;">
                                 {{ recent.title }}
                             </a>
                             <span class="text-xs text-ink-faint mt-1 block">{{ recent.created_at|date:"M j, Y" }}</span>
@@ -355,25 +422,30 @@
             <!-- Write CTA (logged in) -->
             {% if user.is_authenticated %}
             <div class="rounded-2xl p-5 text-center overflow-hidden relative"
-                 style="background-color: #0D3B38;
+                style="background-color: #0D3B38;
                         background-image: radial-gradient(ellipse 80% 60% at 80% 20%, rgba(200,96,26,0.35) 0%, transparent 60%);">
                 <svg class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="xMidYMid slice"
-                     style="opacity: 0.15; mix-blend-mode: overlay;">
-                    <filter id="sidebar-grain"><feTurbulence type="fractalNoise" baseFrequency="0.80" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
-                    <rect width="100%" height="100%" filter="url(#sidebar-grain)"/>
+                    style="opacity: 0.15; mix-blend-mode: overlay;">
+                    <filter id="sidebar-grain">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.80" numOctaves="3" stitchTiles="stitch" />
+                        <feColorMatrix type="saturate" values="0" />
+                    </filter>
+                    <rect width="100%" height="100%" filter="url(#sidebar-grain)" />
                 </svg>
                 <div class="relative">
                     <div class="w-10 h-10 rounded-full mx-auto mb-3 flex items-center justify-center"
-                         style="background: rgba(200,96,26,0.25);">
+                        style="background: rgba(200,96,26,0.25);">
                         <svg class="w-5 h-5 text-accent-mid" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
                     </div>
                     <h3 class="font-display font-bold text-cream mb-1">Got something to say?</h3>
-                    <p class="text-xs mb-4" style="color: rgba(200,222,220,0.70);">Share your thoughts with the world.</p>
+                    <p class="text-xs mb-4" style="color: rgba(200,222,220,0.70);">Share your thoughts with the world.
+                    </p>
                     <a href="{% url 'blog:post_create' %}"
-                       class="inline-block px-5 py-2 text-brand font-bold rounded-full text-sm bg-cream hover:bg-parchment active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/60"
-                       style="transition: background-color 0.15s, transform 0.15s; box-shadow: var(--shadow-sm);">
+                        class="inline-block px-5 py-2 text-brand font-bold rounded-full text-sm bg-cream hover:bg-parchment active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/60"
+                        style="transition: background-color 0.15s, transform 0.15s; box-shadow: var(--shadow-sm);">
                         Write a Post
                     </a>
                 </div>
@@ -387,166 +459,171 @@
 
 {% block extra_js %}
 <script>
-(function () {
-    const { useState, useRef, useEffect } = React;
-    const e = React.createElement;
+    (function () {
+        const { useState, useRef, useEffect } = React;
+        const e = React.createElement;
 
-    function HeroSearch({ searchUrl }) {
-        const [query, setQuery]   = useState('');
-        const [focused, setFocus] = useState(false);
-        const inputRef = useRef(null);
+        function HeroSearch({ searchUrl }) {
+            const [query, setQuery] = useState('');
+            const [focused, setFocus] = useState(false);
+            const inputRef = useRef(null);
 
-        // ⌘K / Ctrl+K global shortcut
-        useEffect(() => {
-            const handler = (ev) => {
-                if ((ev.metaKey || ev.ctrlKey) && ev.key === 'k') {
-                    ev.preventDefault();
-                    inputRef.current && inputRef.current.focus();
-                }
+            // ⌘K / Ctrl+K global shortcut
+            useEffect(() => {
+                const handler = (ev) => {
+                    if ((ev.metaKey || ev.ctrlKey) && ev.key === 'k') {
+                        ev.preventDefault();
+                        inputRef.current && inputRef.current.focus();
+                    }
+                };
+                document.addEventListener('keydown', handler);
+                return () => document.removeEventListener('keydown', handler);
+            }, []);
+
+            const submit = (ev) => {
+                ev.preventDefault();
+                if (query.trim()) window.location.href = searchUrl + '?query=' + encodeURIComponent(query.trim());
             };
-            document.addEventListener('keydown', handler);
-            return () => document.removeEventListener('keydown', handler);
-        }, []);
 
-        const submit = (ev) => {
-            ev.preventDefault();
-            if (query.trim()) window.location.href = searchUrl + '?query=' + encodeURIComponent(query.trim());
-        };
+            // Shell styles
+            const shell = {
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
+                height: '52px',
+                borderRadius: '999px',
+                padding: '0 6px 0 20px',
+                gap: '10px',
+                background: focused ? 'rgba(255,255,255,0.11)' : 'rgba(255,255,255,0.07)',
+                border: focused
+                    ? '1px solid rgba(255,255,255,0.28)'
+                    : '1px solid rgba(255,255,255,0.12)',
+                boxShadow: focused
+                    ? '0 0 0 3px rgba(200,222,220,0.12), 0 8px 32px rgba(0,0,0,0.30)'
+                    : '0 4px 20px rgba(0,0,0,0.22)',
+                transition: 'background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
+                cursor: 'text',
+            };
 
-        // Shell styles
-        const shell = {
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            width: '100%',
-            height: '52px',
-            borderRadius: '999px',
-            padding: '0 6px 0 20px',
-            gap: '10px',
-            background: focused ? 'rgba(255,255,255,0.11)' : 'rgba(255,255,255,0.07)',
-            border: focused
-                ? '1px solid rgba(255,255,255,0.28)'
-                : '1px solid rgba(255,255,255,0.12)',
-            boxShadow: focused
-                ? '0 0 0 3px rgba(200,222,220,0.12), 0 8px 32px rgba(0,0,0,0.30)'
-                : '0 4px 20px rgba(0,0,0,0.22)',
-            transition: 'background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
-            cursor: 'text',
-        };
-
-        return e('form', { onSubmit: submit, style: { width: '100%' } },
-            e('div', {
-                style: shell,
-                onClick: () => inputRef.current && inputRef.current.focus(),
-            },
-
-                // Search icon
-                e('svg', {
-                    width: 16, height: 16, fill: 'none', viewBox: '0 0 24 24',
-                    style: {
-                        flexShrink: 0,
-                        stroke: focused ? 'rgba(255,255,255,0.80)' : 'rgba(255,255,255,0.38)',
-                        transition: 'stroke 0.2s ease',
-                    }
+            return e('form', { onSubmit: submit, style: { width: '100%' } },
+                e('div', {
+                    style: shell,
+                    onClick: () => inputRef.current && inputRef.current.focus(),
                 },
-                    e('path', { strokeLinecap:'round', strokeLinejoin:'round', strokeWidth:'2',
-                        d:'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' })
-                ),
 
-                // Input
-                e('input', {
-                    ref: inputRef,
-                    type: 'text',
-                    value: query,
-                    onChange: (ev) => setQuery(ev.target.value),
-                    onFocus: () => setFocus(true),
-                    onBlur:  () => setFocus(false),
-                    placeholder: 'Search articles\u2026',
-                    style: {
-                        flex: 1,
-                        background: 'transparent',
-                        border: 'none',
-                        outline: 'none',
-                        fontSize: '0.9375rem',
-                        color: 'rgba(255,255,255,0.90)',
-                        fontFamily: "'DM Sans', system-ui, sans-serif",
-                        letterSpacing: '0.005em',
-                    }
-                }),
-
-                // ⌘K badge (hidden when typing)
-                !query && e('kbd', {
-                    style: {
-                        display: 'flex', alignItems: 'center', gap: '2px',
-                        padding: '3px 8px',
-                        borderRadius: '6px',
-                        background: 'rgba(255,255,255,0.08)',
-                        border: '1px solid rgba(255,255,255,0.10)',
-                        color: 'rgba(255,255,255,0.35)',
-                        fontSize: '11px',
-                        fontFamily: "'DM Sans', system-ui, sans-serif",
-                        fontWeight: '500',
-                        letterSpacing: '0.03em',
-                        flexShrink: 0,
-                        cursor: 'default',
-                        userSelect: 'none',
-                        transition: 'opacity 0.15s ease',
-                    }
-                }, '\u2318K'),
-
-                // Clear × (shown when typing)
-                query && e('button', {
-                    type: 'button',
-                    onClick: (ev) => { ev.stopPropagation(); setQuery(''); inputRef.current && inputRef.current.focus(); },
-                    style: {
-                        width: '24px', height: '24px', borderRadius: '50%',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: 'rgba(255,255,255,0.10)', border: 'none',
-                        cursor: 'pointer', flexShrink: 0,
-                        transition: 'background 0.15s ease',
+                    // Search icon
+                    e('svg', {
+                        width: 16, height: 16, fill: 'none', viewBox: '0 0 24 24',
+                        style: {
+                            flexShrink: 0,
+                            stroke: focused ? 'rgba(255,255,255,0.80)' : 'rgba(255,255,255,0.38)',
+                            transition: 'stroke 0.2s ease',
+                        }
                     },
-                    onMouseEnter: (ev) => { ev.currentTarget.style.background = 'rgba(255,255,255,0.18)'; },
-                    onMouseLeave: (ev) => { ev.currentTarget.style.background = 'rgba(255,255,255,0.10)'; },
-                },
-                    e('svg', { width: 10, height: 10, fill:'none', stroke:'rgba(255,255,255,0.70)', viewBox:'0 0 24 24' },
-                        e('path', { strokeLinecap:'round', strokeLinejoin:'round', strokeWidth:'2.5', d:'M6 18L18 6M6 6l12 12' })
-                    )
-                ),
+                        e('path', {
+                            strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2',
+                            d: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+                        })
+                    ),
 
-                // Enter arrow submit button (pill, right side)
-                e('button', {
-                    type: 'submit',
-                    style: {
-                        flexShrink: 0,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        width: '40px', height: '40px', borderRadius: '50%',
-                        background: query ? 'rgba(200,96,26,0.85)' : 'rgba(255,255,255,0.06)',
-                        border: '1px solid ' + (query ? 'rgba(200,96,26,0.6)' : 'rgba(255,255,255,0.08)'),
-                        cursor: query ? 'pointer' : 'default',
-                        transition: 'background 0.2s ease, border-color 0.2s ease, transform 0.15s ease',
+                    // Input
+                    e('input', {
+                        ref: inputRef,
+                        type: 'text',
+                        value: query,
+                        onChange: (ev) => setQuery(ev.target.value),
+                        onFocus: () => setFocus(true),
+                        onBlur: () => setFocus(false),
+                        placeholder: 'Search articles\u2026',
+                        style: {
+                            flex: 1,
+                            background: 'transparent',
+                            border: 'none',
+                            outline: 'none',
+                            fontSize: '0.9375rem',
+                            color: 'rgba(255,255,255,0.90)',
+                            fontFamily: "'DM Sans', system-ui, sans-serif",
+                            letterSpacing: '0.005em',
+                        }
+                    }),
+
+                    // ⌘K badge (hidden when typing)
+                    !query && e('kbd', {
+                        style: {
+                            display: 'flex', alignItems: 'center', gap: '2px',
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            background: 'rgba(255,255,255,0.08)',
+                            border: '1px solid rgba(255,255,255,0.10)',
+                            color: 'rgba(255,255,255,0.35)',
+                            fontSize: '11px',
+                            fontFamily: "'DM Sans', system-ui, sans-serif",
+                            fontWeight: '500',
+                            letterSpacing: '0.03em',
+                            flexShrink: 0,
+                            cursor: 'default',
+                            userSelect: 'none',
+                            transition: 'opacity 0.15s ease',
+                        }
+                    }, '\u2318K'),
+
+                    // Clear × (shown when typing)
+                    query && e('button', {
+                        type: 'button',
+                        onClick: (ev) => { ev.stopPropagation(); setQuery(''); inputRef.current && inputRef.current.focus(); },
+                        style: {
+                            width: '24px', height: '24px', borderRadius: '50%',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: 'rgba(255,255,255,0.10)', border: 'none',
+                            cursor: 'pointer', flexShrink: 0,
+                            transition: 'background 0.15s ease',
+                        },
+                        onMouseEnter: (ev) => { ev.currentTarget.style.background = 'rgba(255,255,255,0.18)'; },
+                        onMouseLeave: (ev) => { ev.currentTarget.style.background = 'rgba(255,255,255,0.10)'; },
                     },
-                    onMouseEnter: (ev) => { if (query) ev.currentTarget.style.background = '#C8601A'; },
-                    onMouseLeave: (ev) => { ev.currentTarget.style.background = query ? 'rgba(200,96,26,0.85)' : 'rgba(255,255,255,0.06)'; },
-                    onMouseDown:  (ev) => { if (query) ev.currentTarget.style.transform = 'scale(0.92)'; },
-                    onMouseUp:    (ev) => { ev.currentTarget.style.transform = 'scale(1)'; },
-                },
-                    e('svg', { width: 14, height: 14, fill:'none', viewBox:'0 0 24 24',
-                        style: { stroke: query ? '#fff' : 'rgba(255,255,255,0.25)', transition: 'stroke 0.2s ease' }
+                        e('svg', { width: 10, height: 10, fill: 'none', stroke: 'rgba(255,255,255,0.70)', viewBox: '0 0 24 24' },
+                            e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2.5', d: 'M6 18L18 6M6 6l12 12' })
+                        )
+                    ),
+
+                    // Enter arrow submit button (pill, right side)
+                    e('button', {
+                        type: 'submit',
+                        style: {
+                            flexShrink: 0,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            width: '40px', height: '40px', borderRadius: '50%',
+                            background: query ? 'rgba(200,96,26,0.85)' : 'rgba(255,255,255,0.06)',
+                            border: '1px solid ' + (query ? 'rgba(200,96,26,0.6)' : 'rgba(255,255,255,0.08)'),
+                            cursor: query ? 'pointer' : 'default',
+                            transition: 'background 0.2s ease, border-color 0.2s ease, transform 0.15s ease',
+                        },
+                        onMouseEnter: (ev) => { if (query) ev.currentTarget.style.background = '#C8601A'; },
+                        onMouseLeave: (ev) => { ev.currentTarget.style.background = query ? 'rgba(200,96,26,0.85)' : 'rgba(255,255,255,0.06)'; },
+                        onMouseDown: (ev) => { if (query) ev.currentTarget.style.transform = 'scale(0.92)'; },
+                        onMouseUp: (ev) => { ev.currentTarget.style.transform = 'scale(1)'; },
                     },
-                        e('path', { strokeLinecap:'round', strokeLinejoin:'round', strokeWidth:'2',
-                            d:'M5 12h14M12 5l7 7-7 7' })
+                        e('svg', {
+                            width: 14, height: 14, fill: 'none', viewBox: '0 0 24 24',
+                            style: { stroke: query ? '#fff' : 'rgba(255,255,255,0.25)', transition: 'stroke 0.2s ease' }
+                        },
+                            e('path', {
+                                strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2',
+                                d: 'M5 12h14M12 5l7 7-7 7'
+                            })
+                        )
                     )
                 )
-            )
-        );
-    }
+            );
+        }
 
-    const container = document.getElementById('react-hero-search');
-    if (container) {
-        ReactDOM.createRoot(container).render(
-            e(HeroSearch, { searchUrl: container.dataset.searchUrl })
-        );
-    }
-})();
+        const container = document.getElementById('react-hero-search');
+        if (container) {
+            ReactDOM.createRoot(container).render(
+                e(HeroSearch, { searchUrl: container.dataset.searchUrl })
+            );
+        }
+    })();
 </script>
 {% endblock %}
